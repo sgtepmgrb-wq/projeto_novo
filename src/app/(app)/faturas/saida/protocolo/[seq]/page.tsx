@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import SaidaFaturaForm from '@/components/SaidaFaturaForm';
 
-// A interface Fatura continua sendo uma ótima prática.
+// A interface para os dados da fatura
 interface Fatura {
   protocolo_seq: string;
   fornecedores: { razao_social: string; } | null;
@@ -11,8 +11,7 @@ interface Fatura {
   // Adicione outros campos da sua fatura aqui...
 }
 
-// A MUDANÇA ESTÁ AQUI 👇: Removemos o 'type PageProps' e definimos o tipo
-// diretamente na assinatura da função, o que evita o conflito com o Next.js.
+// O tipo das props é definido diretamente na função
 export default async function SaidaPorProtocoloPage({ params }: { params: { seq: string } }) {
   const supabase = createClient();
   const { seq } = params;
