@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server';
 import SaidaFaturaForm from '@/components/SaidaFaturaForm';
+import { JSX } from 'react'; // Importamos o tipo JSX
 
 interface Fatura {
   protocolo_seq: string;
@@ -10,16 +11,15 @@ interface Fatura {
   // Adicione outros campos da sua fatura aqui...
 }
 
-// 👇 A MUDANÇA ESTÁ AQUI 👇
-// Adicionamos 'searchParams' à assinatura, mesmo que não seja usado.
-// Isso alinha nossa definição com o tipo completo que o Next.js espera,
-// resolvendo o erro de incompatibilidade.
+// 👇 A MUDANÇA FINAL ESTÁ AQUI 👇
+// Adicionamos `: Promise<JSX.Element>` para dizer explicitamente ao TypeScript
+// que esta função assíncrona vai retornar um elemento React.
 export default async function SaidaPorProtocoloPage({ 
   params,
 }: { 
   params: { seq: string };
   searchParams: { [key: string]: string | string[] | undefined };
-}) {
+}): Promise<JSX.Element> { // <--- ADIÇÃO CRÍTICA AQUI
   const supabase = createClient();
   const { seq } = params;
   
