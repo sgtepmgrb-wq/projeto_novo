@@ -3,7 +3,6 @@
 import { createClient } from '@/lib/supabase/server';
 import SaidaFaturaForm from '@/components/SaidaFaturaForm';
 
-// A interface para os dados da fatura
 interface Fatura {
   protocolo_seq: string;
   fornecedores: { razao_social: string; } | null;
@@ -11,8 +10,16 @@ interface Fatura {
   // Adicione outros campos da sua fatura aqui...
 }
 
-// O tipo das props é definido diretamente na função
-export default async function SaidaPorProtocoloPage({ params }: { params: { seq: string } }) {
+// 👇 A MUDANÇA ESTÁ AQUI 👇
+// Adicionamos 'searchParams' à assinatura, mesmo que não seja usado.
+// Isso alinha nossa definição com o tipo completo que o Next.js espera,
+// resolvendo o erro de incompatibilidade.
+export default async function SaidaPorProtocoloPage({ 
+  params,
+}: { 
+  params: { seq: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const supabase = createClient();
   const { seq } = params;
   
