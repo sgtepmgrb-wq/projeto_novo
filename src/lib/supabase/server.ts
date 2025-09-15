@@ -3,7 +3,6 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-// A função exportada se chama createClient, como o erro pedia.
 export function createClient() {
   const cookieStore = cookies()
 
@@ -19,14 +18,14 @@ export function createClient() {
           try {
             cookieStore.set({ name, value, ...options })
           } catch (error) {
-            // Ignora erros em Server Actions, que não podem setar cookies.
+            // Ignora erros em Server Actions
           }
         },
         remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: '', ...options })
           } catch (error) {
-            // Ignora erros em Server Actions, que não podem setar cookies.
+            // Ignora erros em Server Actions
           }
         },
       },
