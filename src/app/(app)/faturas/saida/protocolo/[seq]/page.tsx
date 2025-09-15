@@ -2,30 +2,28 @@
 
 import { createClient } from '@/lib/supabase/server';
 import SaidaFaturaForm from '@/components/SaidaFaturaForm';
-import { JSX } from 'react';
 
-// ✅ Solução da Outra IA: Força a página a rodar no ambiente Node.js,
-// o que é 100% compatível com o Supabase e elimina os warnings.
 export const runtime = "nodejs";
 
+// Tipagem das props da página
+type PageProps = {
+  params: { seq: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
+
+// Tipagem da fatura (ajuste conforme seu banco)
 interface Fatura {
   protocolo_seq: string;
-  fornecedores: { razao_social: string; } | null;
-  cad_pi: { pi_nome: string; } | null;
-  // Adicione outros campos da sua fatura aqui...
+  fornecedores: { razao_social: string } | null;
+  cad_pi: { pi_nome: string } | null;
 }
 
-// ✅ Nossa Solução Combinada: A definição de tipo mais explícita possível,
-// informando as props de entrada E o tipo de retorno da função.
-export default async function SaidaPorProtocoloPage({ 
+export default async function SaidaPorProtocoloPage({
   params,
-}: { 
-  params: { seq: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-}): Promise<JSX.Element> {
+}: PageProps) {
   const supabase = createClient();
   const { seq } = params;
-  
+
   const { data: fatura, error } = await supabase
     .from('faturas')
     .select('*, fornecedores(razao_social), cad_pi(pi_nome)')
