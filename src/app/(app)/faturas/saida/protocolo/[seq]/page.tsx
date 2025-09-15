@@ -2,7 +2,11 @@
 
 import { createClient } from '@/lib/supabase/server';
 import SaidaFaturaForm from '@/components/SaidaFaturaForm';
-import { JSX } from 'react'; // Importamos o tipo JSX
+import { JSX } from 'react';
+
+// ✅ Solução da Outra IA: Força a página a rodar no ambiente Node.js,
+// o que é 100% compatível com o Supabase e elimina os warnings.
+export const runtime = "nodejs";
 
 interface Fatura {
   protocolo_seq: string;
@@ -11,15 +15,14 @@ interface Fatura {
   // Adicione outros campos da sua fatura aqui...
 }
 
-// 👇 A MUDANÇA FINAL ESTÁ AQUI 👇
-// Adicionamos `: Promise<JSX.Element>` para dizer explicitamente ao TypeScript
-// que esta função assíncrona vai retornar um elemento React.
+// ✅ Nossa Solução Combinada: A definição de tipo mais explícita possível,
+// informando as props de entrada E o tipo de retorno da função.
 export default async function SaidaPorProtocoloPage({ 
   params,
 }: { 
   params: { seq: string };
   searchParams: { [key: string]: string | string[] | undefined };
-}): Promise<JSX.Element> { // <--- ADIÇÃO CRÍTICA AQUI
+}): Promise<JSX.Element> {
   const supabase = createClient();
   const { seq } = params;
   
