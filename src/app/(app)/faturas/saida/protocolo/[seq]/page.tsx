@@ -3,27 +3,30 @@
 import { createClient } from '@/lib/supabase/server';
 import SaidaFaturaForm from '@/components/SaidaFaturaForm';
 
+// ✅ Solução #1: Força a página a rodar no ambiente Node.js,
+// que é 100% compatível com o Supabase e elimina os warnings.
 export const runtime = "nodejs";
 
-// Tipagem das props da página
-type PageProps = {
-  params: { seq: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
-
-// Tipagem da fatura (ajuste conforme seu banco)
+// Tipagem dos dados da fatura (adapte conforme seu banco)
 interface Fatura {
   protocolo_seq: string;
   fornecedores: { razao_social: string } | null;
   cad_pi: { pi_nome: string } | null;
+  // Adicione outros campos da sua fatura aqui...
 }
 
-export default async function SaidaPorProtocoloPage({
-  params,
-}: PageProps) {
+// ✅ Solução #2: Criamos nossa própria tipagem para as props da página,
+// evitando o conflito com a tipagem interna do Next.js.
+interface PageProps {
+  params: { seq: string };
+  searchParams?: { [key:string]: string | string[] | undefined };
+}
+
+// Usamos a nossa interface PageProps aqui
+export default async function SaidaPorProtocoloPage({ params }: PageProps) {
   const supabase = createClient();
   const { seq } = params;
-
+  
   const { data: fatura, error } = await supabase
     .from('faturas')
     .select('*, fornecedores(razao_social), cad_pi(pi_nome)')
