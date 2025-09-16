@@ -9,6 +9,7 @@ export async function middleware(request: NextRequest) {
     },
   })
 
+  // Cria um cliente Supabase que pode operar no servidor e no middleware
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -17,9 +18,6 @@ export async function middleware(request: NextRequest) {
         get(name: string) {
           return request.cookies.get(name)?.value
         },
-        // A lógica de `set` e `remove` foi simplificada para maior clareza,
-        // pois a versão completa já está no seu código e funciona bem.
-        // O importante é garantir que o `supabase.auth.getUser()` funcione.
         set(name: string, value: string, options: CookieOptions) {
           request.cookies.set({ name, value, ...options })
           response = NextResponse.next({ request: { headers: request.headers } })
@@ -34,42 +32,41 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Pega a informação do usuário
+  // Pega a sessão do usuário
   const { data: { user } } = await supabase.auth.getUser()
-
-  // Pega a URL que o usuário está tentando acessar
   const { pathname } = request.nextUrl
 
-  // --- LÓGICA DE PROTEÇÃO ---
+  // --- LÓGICA DE PROTEÇÃO DE ROTAS ---
 
-  // 1. Define quais rotas são PÚBLICAS (acessíveis sem login)
-  const publicPaths = ['/', '/login', '/auth/callback']
+  // Lista de rotas e arquivos que são sempre públicos
+  const publicPaths = [
+    '/',               // A página inicial (landing page)
+    '/login',          // A página de login
+    '/auth/callback',  // Rota de callback do Supabase
+    '/pmgurb.jpg'      // A imagem de fundo da página inicial
+  ]
 
-  // 2. Verifica se a rota atual é pública
   const isPublicPath = publicPaths.includes(pathname)
 
-  // 3. REGRA PRINCIPAL: Se a rota NÃO é pública e o usuário NÃO está logado,
-  //    redireciona para a página de login.
+  // REGRA 1: Proteger rotas privadas
+  // Se o caminho não é público e não há um usuário logado, redireciona para /login.
   if (!isPublicPath && !user) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // 4. REGRA ADICIONAL: Se o usuário ESTÁ logado e tenta acessar uma rota pública
-  //    (como a página inicial ou de login), redireciona para a área principal do app.
-  if (isPublicPath && user) {
-    // Evita loop de redirecionamento para a página inicial se ela for a destino
-    if (pathname === '/faturas') {
-      return response
-    }
-    return NextResponse.redirect(new URL('/faturas', request.url))
+  // REGRA 2: Redirecionar usuários já logados
+  // Se o usuário está logado e tenta acessar a página de login,
+  // redireciona para a página principal da aplicação.
+  if (user && pathname === '/login') {
+    return NextResponse.redirect(new URL('/lista', request.url))
   }
   
+  // Se nenhuma das regras acima for atendida, permite que a requisição continue normalmente.
   return response
 }
 
-
-// A configuração "catch-all" é ESSENCIAL para a estratégia "default deny".
-// Ela garante que o middleware rode em TODAS as requisições.
+// Configuração para definir em quais rotas o middleware deve rodar.
+// Este padrão executa em todas as rotas, exceto arquivos estáticos e rotas de API.
 export const config = {
   matcher: [
     '/((?!api|_next/static|_next/image|favicon.ico).*)',

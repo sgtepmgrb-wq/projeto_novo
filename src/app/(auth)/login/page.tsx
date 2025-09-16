@@ -1,5 +1,4 @@
 // src/app/(auth)/login/page.tsx
-
 'use client'; 
 
 import { Auth } from '@supabase/auth-ui-react';
@@ -17,12 +16,7 @@ export default function LoginPage() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN') {
-        // =======================================================
-        // 👇 AQUI ESTÁ A ÚNICA MUDANÇA NECESSÁRIA 👇
-        // =======================================================
         router.push('/lista'); 
-        // =======================================================
-        
         router.refresh();
       }
     });
@@ -33,8 +27,21 @@ export default function LoginPage() {
   }, [supabase, router]);
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    // MUDANÇA: Adiciona a imagem de fundo na div principal
+    <div 
+      className="relative flex justify-center items-center h-screen bg-gray-100 dark:bg-gray-900 bg-cover bg-center bg-no-repeat"
+      style={{ 
+        backgroundImage: "url('/pmgurb.jpg')", // Sua imagem de fundo
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
+      {/* MUDANÇA: Overlay mais translúcido (bg-black/80 ou bg-black/70 para mais translucidez) */}
+      <div className="absolute inset-0 bg-black/80 z-0" /> {/* Ajuste bg-black/X0 para mudar a opacidade */}
+
+      {/* MUDANÇA: Garante que o formulário fique acima do overlay */}
+      <div className="relative z-10 w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md">
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
