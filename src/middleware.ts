@@ -1,4 +1,3 @@
-// src/middleware.ts
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -9,7 +8,6 @@ export async function middleware(request: NextRequest) {
     },
   })
 
-  // Cria um cliente Supabase que pode operar no servidor e no middleware
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -32,43 +30,69 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Pega a sessão do usuário
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
 
   // --- LÓGICA DE PROTEÇÃO DE ROTAS ---
 
-  // Lista de rotas e arquivos que são sempre públicos
-  const publicPaths = [
-    '/',               // A página inicial (landing page)
-    '/login',          // A página de login
-    '/auth/callback',  // Rota de callback do Supabase
-    '/pmgurb.jpg'      // A imagem de fundo da página inicial
-  ]
-
+  const publicPaths = ['/', '/login', '/auth/callback', '/pmgurb.jpg']
   const isPublicPath = publicPaths.includes(pathname)
 
-  // REGRA 1: Proteger rotas privadas
-  // Se o caminho não é público e não há um usuário logado, redireciona para /login.
+  // Se a rota não é pública e não há usuário, redireciona para login.
   if (!isPublicPath && !user) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // REGRA 2: Redirecionar usuários já logados
-  // Se o usuário está logado e tenta acessar a página de login,
-  // redireciona para a página principal da aplicação.
-  if (user && pathname === '/login') {
-    return NextResponse.redirect(new URL('/lista', request.url))
+  // Se o usuário está logado, verificamos seu cargo e aplicamos as regras.
+  if (user) {
+    // Se o usuário logado tenta acessar a página de login, redireciona para a lista.
+    if (pathname === '/login') {
+      return NextResponse.redirect(new URL('/lista', request.url))
+    }
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    // Assume 'fusex' como cargo padrão se o perfil não for encontrado por algum motivo.
+    const userRole = profile?.role || 'fusex'
+
+    // REGRA 1: Admin pode tudo. Se o usuário é admin, não fazemos mais nenhuma verificação.
+    if (userRole === 'admin') {
+      return response // Permite o acesso
+    }
+
+    // REGRA 2: Auditoria não pode acessar /mapa.
+    if (userRole === 'auditoria') {
+      if (pathname.startsWith('/mapa')) {
+        // Se tentar acessar, redireciona para a página principal.
+        return NextResponse.redirect(new URL('/lista', request.url))
+      }
+    }
+
+    // REGRA 3: FUSEX só pode acessar um conjunto específico de páginas.
+    if (userRole === 'fusex') {
+      const allowedPathsForFusex = ['/lista', '/consultas', '/mapa']
+      
+      // Verificamos se a página que o usuário FUSEX está tentando acessar
+      // NÃO está na lista de páginas permitidas para ele.
+      const isAllowed = allowedPathsForFusex.some(path => pathname.startsWith(path))
+
+      if (!isAllowed) {
+        // Se não estiver na lista permitida, redireciona para a página principal.
+        return NextResponse.redirect(new URL('/lista', request.url))
+      }
+    }
   }
-  
-  // Se nenhuma das regras acima for atendida, permite que a requisição continue normalmente.
+
   return response
 }
 
-// Configuração para definir em quais rotas o middleware deve rodar.
-// Este padrão executa em todas as rotas, exceto arquivos estáticos e rotas de API.
 export const config = {
   matcher: [
+    // Roda em todas as rotas, exceto as de API e arquivos estáticos.
     '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 }

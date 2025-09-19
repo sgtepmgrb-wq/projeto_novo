@@ -1,4 +1,3 @@
-// src/app/(auth)/login/page.tsx
 'use client'; 
 
 import { Auth } from '@supabase/auth-ui-react';
@@ -27,30 +26,37 @@ export default function LoginPage() {
   }, [supabase, router]);
 
   return (
-    // MUDANÇA: Adiciona a imagem de fundo na div principal
     <div 
       className="relative flex justify-center items-center h-screen bg-gray-100 dark:bg-gray-900 bg-cover bg-center bg-no-repeat"
       style={{ 
-        backgroundImage: "url('/pmgurb.jpg')", // Sua imagem de fundo
+        backgroundImage: "url('/pmgurb.jpg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
       }}
     >
-      {/* MUDANÇA: Overlay mais translúcido (bg-black/80 ou bg-black/70 para mais translucidez) */}
-      <div className="absolute inset-0 bg-black/80 z-0" /> {/* Ajuste bg-black/X0 para mudar a opacidade */}
+      <div className="absolute inset-0 bg-black/80 z-0" />
 
-      {/* MUDANÇA: Garante que o formulário fique acima do overlay */}
       <div className="relative z-10 w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md">
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
           providers={[]}
+          view="sign_in"
+
+          // --- MUDANÇA PRINCIPAL AQUI ---
+          showLinks={false} // Remove os links "Sign up" e "Esqueceu a senha"
+          
           localization={{
             variables: {
-              sign_in: { email_label: 'Seu endereço de e-mail', password_label: 'Sua senha', button_label: 'Entrar', link_text: 'Já tem uma conta? Entre' },
-              sign_up: { email_label: 'Seu endereço de e-mail', password_label: 'Crie uma senha', button_label: 'Cadastrar', link_text: 'Não tem uma conta? Cadastre-se' },
-              forgotten_password: { email_label: 'Seu endereço de e-mail', button_label: 'Enviar instruções', link_text: 'Esqueceu sua senha?' },
+              sign_in: { 
+                email_label: 'Seu endereço de e-mail',
+                password_label: 'Sua senha',
+                button_label: 'Entrar',
+                // Tradução dos placeholders adicionada
+                email_input_placeholder: 'exemplo@email.com',
+                password_input_placeholder: 'Sua senha aqui',
+              },
             },
           }}
         />
