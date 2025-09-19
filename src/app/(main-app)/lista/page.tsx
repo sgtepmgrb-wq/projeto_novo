@@ -12,7 +12,7 @@ type Fatura = {
   protocolo_seq: number;
   fornecedores: {
     razao_social: string;
-  } | null; // Fornecedores pode ser nulo se a junção falhar
+  } | null;
 };
 
 export default function ListaFaturasPage() {
@@ -23,7 +23,6 @@ export default function ListaFaturasPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // useEffect para buscar os dados quando a página carregar
   useEffect(() => {
     const fetchFaturas = async () => {
       setLoading(true);
@@ -44,7 +43,6 @@ export default function ListaFaturasPage() {
     fetchFaturas();
   }, [supabase]);
 
-  // Filtra as faturas com base no termo de busca (número do protocolo)
   const filteredFaturas = faturas.filter(fatura =>
     String(fatura.protocolo_seq).includes(searchTerm)
   );
@@ -53,7 +51,6 @@ export default function ListaFaturasPage() {
     <div className="p-8 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Lista de Todas as Faturas</h1>
       
-      {/* Campo de Busca */}
       <div className="mb-6">
         <input
           type="text"
@@ -64,14 +61,12 @@ export default function ListaFaturasPage() {
         />
       </div>
 
-      {/* Exibição dos dados */}
       <div className="bg-white shadow-md rounded-lg">
         <ul className="divide-y divide-gray-200">
           {loading && <li className="p-4 text-center">A carregar...</li>}
           {error && <li className="p-4 text-center text-red-500">{error}</li>}
           {!loading && filteredFaturas.map((fatura) => (
             <li key={fatura.id} className="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center hover:bg-gray-50">
-              {/* Informações da Fatura */}
               <div>
                 <p className="font-bold text-blue-600">PDR nº {fatura.protocolo_seq}</p>
                 <p className="font-semibold text-gray-900 mt-1">{fatura.fornecedores?.razao_social || 'OCS não encontrado'}</p>
@@ -81,10 +76,16 @@ export default function ListaFaturasPage() {
                 </p>
               </div>
 
-              {/* ========== INÍCIO DA MODIFICAÇÃO ========== */}
-              {/* Container dos Botões de Ação com a ordem invertida */}
+              {/* Container dos Botões de Ação */}
               <div className="flex items-center space-x-2 mt-4 sm:mt-0">
-                {/* BOTÃO DE IMPRIMIR AGORA VEM PRIMEIRO */}
+                {/* --- NOVO BOTÃO DE EDITAR AQUI --- */}
+                <Link 
+                  href={`/faturas/editar/${fatura.id}`} 
+                  className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition-colors text-sm whitespace-nowrap"
+                >
+                  Editar
+                </Link>
+
                 <button 
                   onClick={() => window.open(`/imprimir/relatorio/${fatura.protocolo_seq}`, '_blank')}
                   className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors text-sm whitespace-nowrap"
@@ -99,7 +100,6 @@ export default function ListaFaturasPage() {
                   Processar Saída
                 </Link>
               </div>
-              {/* ========== FIM DA MODIFICAÇÃO ========== */}
             </li>
           ))}
         </ul>
