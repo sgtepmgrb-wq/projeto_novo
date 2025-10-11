@@ -1,4 +1,6 @@
-// src/app/(app)/consultas/relatorio/page.tsx
+export const dynamic = 'force-dynamic';
+
+// src/app/(main-app)/consultas/relatorio/page.tsx
 'use client'
 
 import { useState, useEffect, Suspense } from 'react';
@@ -21,7 +23,6 @@ function RelatorioComponent() {
   const [titulo, setTitulo] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // 1. NOVO: Variáveis para controlar quais colunas extras mostrar
   const tipo = searchParams.get('tipo');
   const isConsultaAberta = tipo === 'em_aberto' || tipo === 'ocs_em_aberto';
   const isConsultaFechada = tipo === 'fechadas' || tipo === 'ocs_fechadas';
@@ -32,7 +33,6 @@ function RelatorioComponent() {
       const ocsId = searchParams.get('ocs_id');
       const NOME_DA_COLUNA_FK_FORNECEDOR = 'fornecedor_id';
 
-      // A query base já busca todas as colunas necessárias ('*')
       let query = supabase.from('faturas').select('*, fornecedores(razao_social)');
       
       if (isConsultaAberta) {
@@ -56,9 +56,7 @@ function RelatorioComponent() {
         query = query.eq(NOME_DA_COLUNA_FK_FORNECEDOR, ocsId).eq('data_saida', data);
       }
       
-      // =================================================================
-      // CORREÇÃO: Linha adicionada para evitar o cache do navegador (bug 304)
-      // =================================================================
+      // Correção 1: Evita o cache do navegador (bug 304)
       query = query.neq('protocolo_seq', new Date().getTime() * -1);
 
       const { data, error } = await query.order('protocolo_seq', { ascending: true });
@@ -103,7 +101,6 @@ function RelatorioComponent() {
               <tr>
                 <td className="border p-1">Nº PDR</td>
                 <td className="border p-1">Nome da OCS</td>
-                {/* 2. NOVO: Colunas condicionais no cabeçalho */}
                 {isConsultaAberta && <td className="border p-1">Data de Entrada</td>}
                 {isConsultaAberta && <td className="border p-1 text-center">Dias em Aberto</td>}
                 {isConsultaFechada && <td className="border p-1">Data de Saída</td>}
@@ -120,7 +117,6 @@ function RelatorioComponent() {
                 const glosa = fatura.valor_glosa || 0;
                 const valorFinal = valor - desmembrado - glosa;
 
-                // 3. NOVO: Cálculo dos dias em aberto
                 const diasEmAberto = isConsultaAberta 
                   ? Math.floor((new Date().getTime() - new Date(fatura.created_at).getTime()) / (1000 * 60 * 60 * 24)) 
                   : 0;
@@ -130,7 +126,6 @@ function RelatorioComponent() {
                     <td className="border p-1">{fatura.protocolo_seq}</td>
                     <td className="border p-1">{fatura.fornecedores?.razao_social || 'N/A'}</td>
                     
-                    {/* 4. NOVO: Células condicionais no corpo da tabela */}
                     {isConsultaAberta && <td className="border p-1">{new Date(fatura.created_at).toLocaleDateString('pt-BR')}</td>}
                     {isConsultaAberta && <td className="border p-1 text-center font-semibold">{diasEmAberto}</td>}
                     {isConsultaFechada && <td className="border p-1">{new Date(fatura.data_saida + 'T12:00:00').toLocaleDateString('pt-BR')}</td>}
@@ -145,7 +140,6 @@ function RelatorioComponent() {
             </tbody>
             <tfoot className="bg-gray-100 font-bold">
               <tr>
-                {/* 5. NOVO: Ajuste no colSpan para os totais */}
                 <td colSpan={isConsultaAberta ? 4 : (isConsultaFechada ? 3 : 2)} className="border p-1 text-right">TOTAIS:</td>
                 <td className="border p-1 text-right">{totais.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
                 <td className="border p-1 text-right">{totais.desmembrado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
