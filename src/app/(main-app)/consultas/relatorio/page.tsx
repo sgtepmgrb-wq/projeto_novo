@@ -6,6 +6,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 
+// ... (o código de printStyles continua o mesmo aqui)
 const printStyles = `
   @media print {
     .no-print { display: none !important; }
@@ -13,6 +14,7 @@ const printStyles = `
     @page { size: A4 landscape; margin: 15mm; }
   }
 `;
+
 
 function RelatorioComponent() {
   const supabase = createClient();
@@ -28,6 +30,7 @@ function RelatorioComponent() {
 
   useEffect(() => {
     const fetchResultados = async () => {
+      console.log('1. Iniciando busca de resultados...');
       setLoading(true);
       const ocsId = searchParams.get('ocs_id');
       const NOME_DA_COLUNA_FK_FORNECEDOR = 'fornecedor_id';
@@ -57,20 +60,38 @@ function RelatorioComponent() {
       
       query = query.neq('protocolo_seq', new Date().getTime() * -1);
 
+      console.log('2. Executando a consulta no Supabase...');
       const { data, error } = await query.order('protocolo_seq', { ascending: true });
-      if (data) setResultados(data);
-      if (error) console.error(error);
+      
+      console.log('3. Consulta finalizada. Analisando resultados...');
+      console.log('Dados recebidos:', data);
+      console.log('Erro recebido:', error);
+      
+      if (data) {
+        console.log('4. Sucesso! Atualizando o estado com os resultados.');
+        setResultados(data);
+      }
+      if (error) {
+        console.error('5. ERRO na consulta ao Supabase:', error);
+      }
+
+      console.log('6. Finalizando o carregamento (setLoading para false).');
       setLoading(false);
     };
     fetchResultados();
   }, [searchParams, supabase, isConsultaAberta, isConsultaFechada, tipo]);
 
   useEffect(() => {
+    console.log('Efeito de impressão verificado. Loading:', loading, 'Resultados:', resultados.length);
     if (!loading && resultados.length > 0) {
-      window.print();
+      console.log('Disparando a impressão (window.print)...');
+      // window.print(); // Temporariamente comentado para não atrapalhar o debug
     }
   }, [loading, resultados]);
 
+  // O resto do seu código (cálculo de totais, JSX, etc.) continua exatamente igual
+  // ...
+  
   const totais = resultados.reduce((acc, fatura) => {
     const valor = fatura.valor || 0;
     const desmembrado = fatura.valor_desmembrado || 0;
