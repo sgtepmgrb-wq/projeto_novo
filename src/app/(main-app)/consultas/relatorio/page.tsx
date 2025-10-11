@@ -56,6 +56,11 @@ function RelatorioComponent() {
         query = query.eq(NOME_DA_COLUNA_FK_FORNECEDOR, ocsId).eq('data_saida', data);
       }
       
+      // =================================================================
+      // CORREÇÃO: Linha adicionada para evitar o cache do navegador (bug 304)
+      // =================================================================
+      query = query.neq('protocolo_seq', new Date().getTime() * -1);
+
       const { data, error } = await query.order('protocolo_seq', { ascending: true });
       if (data) setResultados(data);
       if (error) console.error(error);
