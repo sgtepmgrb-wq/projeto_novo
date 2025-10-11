@@ -1,8 +1,7 @@
+'use client';
 export const dynamic = 'force-dynamic';
 
 // src/app/(main-app)/consultas/relatorio/page.tsx
-'use client'
-
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -56,7 +55,6 @@ function RelatorioComponent() {
         query = query.eq(NOME_DA_COLUNA_FK_FORNECEDOR, ocsId).eq('data_saida', data);
       }
       
-      // Correção 1: Evita o cache do navegador (bug 304)
       query = query.neq('protocolo_seq', new Date().getTime() * -1);
 
       const { data, error } = await query.order('protocolo_seq', { ascending: true });
