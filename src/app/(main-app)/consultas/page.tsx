@@ -44,8 +44,11 @@ export default function PaginaConsultas() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800 border-b pb-4">Painel de Consultas</h1>
+    // =================================================================
+    // CORREÇÃO APLICADA AQUI: Adicionada a classe "text-gray-800"
+    // =================================================================
+    <div className="p-8 max-w-7xl mx-auto text-gray-800">
+      <h1 className="text-3xl font-bold mb-8 border-b pb-4">Painel de Consultas</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         
         {/* Caixa 1 e 2 (sem alteração) */}
@@ -99,7 +102,7 @@ export default function PaginaConsultas() {
           <form onSubmit={(e) => { e.preventDefault(); handleGerarRelatorio({ tipo: 'combinada', ocs_id: ocsId, data: dataSaida }); }} className="space-y-3">
               <select id="ocs" value={ocsId} onChange={(e) => setOcsId(e.target.value)} className="p-2 border rounded w-full" required disabled={loadingOcs}>
                 <option value="" disabled>{loadingOcs ? 'Carregando...' : 'Selecione uma OCS'}</option>
-                 {/* 3. ATUALIZAÇÃO: O 'value' agora é o ID */}
+                   {/* 3. ATUALIZAÇÃO: O 'value' agora é o ID */}
                 {ocsList.map((item) => (<option key={item.id} value={item.id}>{item.razao_social}</option>))}
               </select>
               <input type="date" id="data_saida" value={dataSaida} onChange={(e) => setDataSaida(e.target.value)} className="p-2 border rounded w-full" required />
