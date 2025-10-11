@@ -45,7 +45,8 @@ export function RelatorioCliente({ resultados, titulo }: RelatorioProps) {
   return (
     <>
       <style>{printStyles}</style>
-      <div className="p-4 font-sans">
+      {/* CORREÇÃO APLICADA AQUI ABAIXO */}
+      <div className="p-4 font-sans text-gray-800">
         <header className="text-center mb-6 no-print">
           <h1 className="text-xl font-bold">{titulo}</h1>
           <p className="text-sm text-gray-600">Total de {resultados.length} fatura(s) encontrada(s).</p>
