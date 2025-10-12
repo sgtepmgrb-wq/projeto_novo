@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -48,7 +48,10 @@ export default function ListaFaturasPage() {
   );
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    // ========================================================
+    // CORREÇÃO APLICADA AQUI na linha abaixo
+    // ========================================================
+    <div className="p-8 max-w-6xl mx-auto text-gray-800">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Lista de Todas as Faturas</h1>
       
       <div className="mb-6">
