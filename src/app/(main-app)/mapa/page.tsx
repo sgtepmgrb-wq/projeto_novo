@@ -1,4 +1,4 @@
-'use-client';
+'use client'; // CORRIGIDO: de 'use-client' para 'use client'
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -57,9 +57,6 @@ export default function PaginaMapa() {
   };
 
   return (
-    // ========================================================
-    // CORREÇÃO APLICADA AQUI na linha abaixo
-    // ========================================================
     <div className="p-8 max-w-4xl mx-auto text-gray-800">
       <h1 className="text-3xl font-bold mb-8 text-gray-800 border-b pb-4">Atualizar Mapa da Fatura</h1>
 
