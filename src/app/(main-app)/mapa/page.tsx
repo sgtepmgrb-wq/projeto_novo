@@ -1,5 +1,4 @@
-// src/app/(app)/mapa/page.tsx
-'use client'
+'use-client';
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
@@ -58,7 +57,10 @@ export default function PaginaMapa() {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
+    // ========================================================
+    // CORREÇÃO APLICADA AQUI na linha abaixo
+    // ========================================================
+    <div className="p-8 max-w-4xl mx-auto text-gray-800">
       <h1 className="text-3xl font-bold mb-8 text-gray-800 border-b pb-4">Atualizar Mapa da Fatura</h1>
 
       {/* Formulário de Busca */}
@@ -101,7 +103,7 @@ export default function PaginaMapa() {
               <label className="block text-sm font-medium text-gray-500">Valor da Fatura (R$)</label>
               <input type="text" value={fatura.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} readOnly className="mt-1 p-2 border rounded w-full bg-gray-100 cursor-not-allowed" />
             </div>
-             <div>
+              <div>
               <label className="block text-sm font-medium text-gray-500">Data de Saída</label>
               <input type="text" value={fatura.data_saida ? new Date(fatura.data_saida + 'T12:00:00').toLocaleDateString('pt-BR') : 'FATURA EM ABERTO'} readOnly className="mt-1 p-2 border rounded w-full bg-gray-100 cursor-not-allowed" />
             </div>
