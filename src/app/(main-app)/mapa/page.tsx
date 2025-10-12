@@ -58,13 +58,13 @@ export default function PaginaMapa() {
 
   return (
     <div className="p-8 max-w-4xl mx-auto text-gray-800">
-      <h1 className="text-3xl font-bold mb-8 text-gray-800 border-b pb-4">Atualizar Mapa da Fatura</h1>
+      <h1 className="text-3xl font-bold mb-8 text-gray-800 border-b pb-4">Vincular Mapa à Fatura</h1>
 
       {/* Formulário de Busca */}
       <div className="bg-white p-6 shadow-md rounded-lg border mb-8">
         <form onSubmit={handleBuscarFatura}>
           <label htmlFor="protocolo" className="block text-sm font-medium text-gray-700 mb-2">
-            Digite o Número do Protocolo (PDR)
+            Digite o Número do MAPA
           </label>
           <div className="flex space-x-2">
             <input

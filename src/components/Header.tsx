@@ -41,7 +41,7 @@ export default function Header({ user, profile }: HeaderProps) {
         <div className="flex items-center space-x-10">
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <Image src="/logo.png" alt="Logo do Sistema" width={80} height={50} priority />
+              <Image src="/logo.png" alt="Logo do Sistema" width={70} height={42} priority />
             </Link>
           </div>
           {/* Apenas mostra os links de navegação se o utilizador estiver logado */}
