@@ -15,7 +15,8 @@ export default function BuscarFaturaPage() {
   };
 
   return (
-    <div className="p-8 max-w-xl mx-auto">
+    // CORREÇÃO: Classe 'text-gray-800' adicionada na linha abaixo
+    <div className="p-8 max-w-xl mx-auto text-gray-800">
       <div className="p-8 bg-white shadow-md rounded-lg">
         <h1 className="text-2xl font-bold mb-6 text-gray-800">Buscar Fatura por Protocolo</h1>
         <form onSubmit={handleSearch} className="flex flex-col gap-4">
