@@ -21,5 +21,13 @@ export default async function EditFaturaPage({ params }: PageProps) {
   }
 
   // Renderiza o componente de formulário, passando os dados para ele
-  return <EditFaturaForm fatura={fatura} fornecedores={fornecedores} />;
+  return (
+    // ========================================================
+    // CORREÇÃO APLICADA AQUI
+    // Adicionamos um 'div' principal para controlar o layout e a cor do texto
+    // ========================================================
+    <div className="p-8 max-w-6xl mx-auto text-gray-800">
+      <EditFaturaForm fatura={fatura} fornecedores={fornecedores} />
+    </div>
+  );
 }
